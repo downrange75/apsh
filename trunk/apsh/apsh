@@ -37,6 +37,7 @@ my $CMD        = QuoteCMD($ARGV[1]);
 my $NODEFILE   = '/etc/apsh/nodes.tab';
 my @NODES      = GenNodes();
 my @THREADS    = ();
+my $ALLFLG     = "0";
 
 if (! @NODES){
    print "ERROR: node or group not found!\n";
@@ -83,16 +84,24 @@ sub GenNodes {
          ##############################
          $GREPV_STRING .= "| grep -v \"\[,:\]$_\[:,\]\" ";
       }else{
-         $GREP_STRING .= "-e \"\[,:\]$_\[:,\]\" ";
+         if (($_ eq "all") || ($ALLFLG)){
+            $ALLFLG = "1";
+         }else{
+            $GREP_STRING .= "-e \"\[,:\]$_\[:,\]\" ";
+         }
       }
 
-      if (! `cat $NODEFILE | grep $_ | grep -v "^#"`){
+      if (($_ ne "all") && (! `cat $NODEFILE | grep $_ | grep -v "^#"`)){
          print "ERROR: node or group \"$_\" not found!\n";
          exit(1);
       }
    }
 
-   return(`cat $NODEFILE | grep $GREP_STRING $GREPV_STRING | grep -v "^#"`);
+   if ($ALLFLG){
+      return(`cat $NODEFILE $GREPV_STRING | grep -v "^#"`);
+   }else{
+      return(`cat $NODEFILE | grep $GREP_STRING $GREPV_STRING | grep -v "^#"`);
+   }
 }
 
 ##############################

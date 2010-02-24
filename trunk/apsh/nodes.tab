@@ -1,5 +1,5 @@
 #:node:user:groups:
-:node1:chris:all,home,mine:
-:node2:chris:all,mine:
-:node3:chris:all,home:
-:node4:chris:all,test:
+:node1:chris:home,mine:
+:node2:chris:mine:
+:node3:chris:home:
+:node4:chris:test:

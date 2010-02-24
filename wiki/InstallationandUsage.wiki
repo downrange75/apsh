@@ -13,8 +13,7 @@ The config file is located:
 /etc/apsh/nodes.tab
 }}}
 
-Format is:
-(Note the leading and trailing : )
+Format is (Note the leading and trailing : ):
 {{{
 :nodename:username:comma,separated,groupnames:
 }}}

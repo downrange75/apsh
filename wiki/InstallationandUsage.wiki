@@ -6,6 +6,18 @@ cd apsh-0.1
 sudo ./install.sh
 }}}
 
+== Config File ==
+
+The config file is located:
+{{{
+/etc/apsh/nodes.tab
+}}}
+
+Format is:
+{{{
+:nodename:username:comma,separated,groupnames:
+}}}
+
 == Usage ==
 
 General
@@ -41,5 +53,3 @@ Run local script
 {{{
 apsh all "<./local_script.sh"
 }}}
-
-

@@ -1,0 +1,5 @@
+#:node:user:groups:
+:node1:chris:all,home,mine:
+:node2:chris:all,mine:
+:node3:chris:all,home:
+:node4:chris:all,test:

@@ -1,0 +1,140 @@
+#!/usr/bin/perl
+##################################################################################
+# Copyright (C) 2010  Chris Rutledge <rutledge.chris@gmail.com>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+##################################################################################
+use threads;
+
+##############################
+# Error checking
+##############################
+if (! $ARGV[0] || ! $ARGV[1]){
+   print "Usage: apsh <NODEORGROUP[,NODEORGROUP[,..]]> <CMD>\n";
+
+   if($ARGV[0]){
+      print "\nERROR: no command to run!\n";
+   }
+
+   exit(1);
+}
+
+##############################
+# Global Variables
+##############################
+my $CMD        = QuoteCMD($ARGV[1]);
+my $NODEFILE   = '/etc/apsh/nodes.tab';
+my @NODES      = GenNodes();
+my @THREADS    = ();
+
+if (! @NODES){
+   print "ERROR: node or group not found!\n";
+   exit(1);
+}
+
+##############################
+# Main Code
+#
+# For each node found, start
+# a new thread and run cmd.
+##############################
+for (@NODES){
+   push(@THREADS, threads->create(\&RunCMD, "$_"));
+}
+
+##############################
+# Join and wait for completion
+# to cleanup.
+##############################
+for (@THREADS){
+   $_->join();
+}
+
+##############################
+# GenNodes()
+#
+# Returns a list of lines from
+# the config file that match
+# the first arg passed in cmdline.
+##############################
+sub GenNodes {
+   for (split(/,/, $ARGV[0])){
+      if ($_ =~ s/^-//){
+         ##############################
+         # Would love to know why the
+         # following doesn't work:
+         #
+         # $GREPV_STRING .= "| grep -v \"\[,:^\]$_\[:,\$\]\" ";
+         #
+         # I added the : to the beginning
+         # and end of each line because
+         # above did not work.
+         ##############################
+         $GREPV_STRING .= "| grep -v \"\[,:\]$_\[:,\]\" ";
+      }else{
+         $GREP_STRING .= "-e \"\[,:\]$_\[:,\]\" ";
+      }
+
+      if (! `cat $NODEFILE | grep $_ | grep -v "^#"`){
+         print "ERROR: node or group \"$_\" not found!\n";
+         exit(1);
+      }
+   }
+
+   return(`cat $NODEFILE | grep $GREP_STRING $GREPV_STRING | grep -v "^#"`);
+}
+
+##############################
+# RunCMD()
+#
+# Get $HOST and $USER from string
+# passed and run the command.
+##############################
+sub RunCMD {
+   $_[0] =~ s/^://;
+   $_[0] =~ s/:$//;
+
+   my (@NODECFG) = split(/:/, $_[0]);
+
+   open(FH, "ssh -o BatchMode=yes -l $NODECFG[1] $NODECFG[0] $CMD 2>&1 |");
+
+   while(<FH>){
+      print "$NODECFG[0]: $_";
+   }
+}
+
+##############################
+# QuoteCMD()
+#
+# Escape special chars in $CMD
+##############################
+sub QuoteCMD{
+   my ($STR) = @_;
+
+   if (!($STR =~ /\"/)){
+       $STR =~ s/\$/\\\$/sg;
+       $STR =~ s/\`/\\\`/sg;
+       $STR = qq("$STR");
+   }
+   elsif (!($STR =~ /\'/)){
+       $STR = qq('$STR');
+   }else{
+       $STR =~ s/\"/\\\"/sg;
+       $STR =~ s/\$/\\\$/sg;
+       $STR =~ s/\`/\\\`/sg;
+       $STR = qq("$STR");
+   }
+
+   return($STR);
+}

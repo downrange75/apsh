@@ -42,11 +42,11 @@ apsh all,-group1 uptime
 
 Run a series of commands
 {{{
-apsh all 'update;date'
+apsh all 'uptime;date'
 }}}
 or
 {{{
-apsh all "update;date"
+apsh all "uptime;date"
 }}}
 
 Run local script

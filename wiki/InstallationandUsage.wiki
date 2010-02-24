@@ -1,0 +1,45 @@
+== Installation ==
+
+{{{
+tar -zxvf apsh-0.1.tar.gz
+cd apsh-0.1
+sudo ./install.sh
+}}}
+
+== Usage ==
+
+General
+{{{
+apsh all uptime
+}}}
+
+Multiple nodes and groups
+{{{
+apsh group1,group2,node1,node2 uptime
+}}}
+
+Exclude a node
+{{{
+apsh group1,-node1 uptime
+}}}
+
+Exclude a group
+{{{
+apsh all,-group1 uptime
+}}}
+
+Run a series of commands
+{{{
+apsh all 'update;date'
+}}}
+or
+{{{
+apsh all "update;date"
+}}}
+
+Run local script
+{{{
+apsh all "<./local_script.sh"
+}}}
+
+

@@ -1,8 +1,8 @@
 == Installation ==
 
 {{{
-tar -zxvf apsh-0.1.tar.gz
-cd apsh-0.1
+tar -zxvf apsh-0.2.tar.gz
+cd apsh-0.2
 sudo ./install.sh
 }}}
 
@@ -14,6 +14,7 @@ The config file is located:
 }}}
 
 Format is:
+(Note the leading and trailing : )
 {{{
 :nodename:username:comma,separated,groupnames:
 }}}

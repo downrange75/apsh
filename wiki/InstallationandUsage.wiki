@@ -21,6 +21,7 @@ Format is (Note the leading and trailing : ):
 == Usage ==
 
 General
+apsh <NODEORGROUP[,NODEORGROUP[,..]]> <CMD>
 {{{
 apsh all uptime
 }}}

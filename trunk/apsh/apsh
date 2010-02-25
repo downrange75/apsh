@@ -72,16 +72,6 @@ for (@THREADS){
 sub GenNodes {
    for (split(/,/, $ARGV[0])){
       if ($_ =~ s/^-//){
-         ##############################
-         # Would love to know why the
-         # following doesn't work:
-         #
-         # $GREPV_STRING .= "| grep -v \"\[,:^\]$_\[:,\$\]\" ";
-         #
-         # I added the : to the beginning
-         # and end of each line because
-         # above did not work.
-         ##############################
          $GREPV_STRING .= "| grep -v \"\[,:\]$_\[:,\]\" ";
       }else{
          if (($_ eq "all") || ($ALLFLG)){

@@ -24,20 +24,20 @@ use APSH;
 ##############################
 if (! $ARGV[0] || ! $ARGV[1] || ! $ARGV[2]){
    if ((! $ARGV[0]) &&(! $ARGV[1])){
-      print "Usage: apscp <NODEORGROUP[,NODEORGROUP[,..]]> <LOCALFILE> <REMOTEFILE>\n";
+      print STDERR "Usage: apscp <NODEORGROUP[,NODEORGROUP[,..]]> <LOCALFILE> <REMOTEFILE>\n";
 
       if (! $ARGV[1]){
-         print "\nERROR: No local file or directory name!\n";
+         print STDERR "\nERROR: No local file or directory name!\n";
       }
 
       exit(1);
    }else{
-      print "WARNING: No remote file or directory name! Assuming ~/.\n";
+      print STDERR "WARNING: No remote file or directory name! Assuming ~/.\n";
    }
 }
 
 if ((! -e $ARGV[1]) && (! -d $ARGV[1])){
-   print "ERROR: local file or directory does not exist!\n";
+   print STDERR "ERROR: local file or directory does not exist!\n";
    exit(1);
 }
 
@@ -55,7 +55,7 @@ if (-d $LFILE){
 }
 
 if (! @NODES){
-   print "ERROR: node or group not found!\n";
+   print STDERR "ERROR: node or group not found!\n";
    exit(1);
 }
 

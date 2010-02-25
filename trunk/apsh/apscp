@@ -23,10 +23,10 @@ use APSH;
 # Error checking
 ##############################
 if (! $ARGV[0] || ! $ARGV[1] || ! $ARGV[2]){
-   if ((! $ARGV[0]) &&(! $ARGV[1])){
+   if ((! $ARGV[0]) || (! $ARGV[1])){
       print STDERR "Usage: apscp <NODEORGROUP[,NODEORGROUP[,..]]> <LOCALFILE> <REMOTEFILE>\n";
 
-      if (! $ARGV[1]){
+      if ($ARGV[0]){
          print STDERR "\nERROR: No local file or directory name!\n";
       }
 

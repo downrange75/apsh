@@ -23,10 +23,10 @@ use APSH;
 # Error checking
 ##############################
 if (! $ARGV[0] || ! $ARGV[1]){
-   print "Usage: apsh <NODEORGROUP[,NODEORGROUP[,..]]> <CMD>\n";
+   print STDERR "Usage: apsh <NODEORGROUP[,NODEORGROUP[,..]]> <CMD>\n";
 
    if($ARGV[0]){
-      print "\nERROR: no command to run!\n";
+      print STDERR "\nERROR: no command to run!\n";
    }
 
    exit(1);
@@ -40,7 +40,7 @@ my @NODES      = APSH::GenNodes($ARGV[0]);
 my @THREADS    = ();
 
 if (! @NODES){
-   print "ERROR: node or group not found!\n";
+   print STDERR "ERROR: node or group not found!\n";
    exit(1);
 }
 

@@ -121,6 +121,8 @@ sub RunCMD {
    while(<FH>){
       print "$NODECFG[0]: $_";
    }
+
+   close(FH);
 }
 
 ##############################

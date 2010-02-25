@@ -43,7 +43,7 @@ sub GenNodes {
       }
 
       if (($_ ne "all") && (! `cat $NODEFILE | grep \"\[,:\]$_\[:,\]\" | grep -v "^#"`)){
-         print "ERROR: node or group \"$_\" not found!\n";
+         print STDERR "ERROR: node or group \"$_\" not found!\n";
          exit(1);
       }
    }

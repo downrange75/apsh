@@ -36,7 +36,7 @@ if (! $ARGV[0] || ! $ARGV[1] || ! $ARGV[2]){
    }
 }
 
-if ((! -e $ARGV[1]) && (! -d $ARGV[1])){
+if (! -e $ARGV[1]){
    print STDERR "ERROR: local file or directory does not exist!\n";
    exit(1);
 }

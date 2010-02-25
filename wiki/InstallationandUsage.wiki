@@ -1,8 +1,8 @@
 == Installation ==
 
 {{{
-tar -zxvf apsh-0.2.tar.gz
-cd apsh-0.2
+tar -zxvf apsh-<VERSION>.tar.gz
+cd apsh-<VERSION>
 sudo ./install.sh
 }}}
 

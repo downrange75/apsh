@@ -63,19 +63,10 @@ sub GenNodes {
 sub QuoteCMD{
    my ($STR) = @_;
 
-   if (!($STR =~ /\"/)){
-       $STR =~ s/\$/\\\$/sg;
-       $STR =~ s/\`/\\\`/sg;
-       $STR = qq("$STR");
-   }
-   elsif (!($STR =~ /\'/)){
-       $STR = qq('$STR');
-   }else{
-       $STR =~ s/\"/\\\"/sg;
-       $STR =~ s/\$/\\\$/sg;
-       $STR =~ s/\`/\\\`/sg;
-       $STR = qq("$STR");
-   }
+   $STR =~ s/\"/\\\"/sg;
+   $STR =~ s/\$/\\\$/sg;
+   $STR =~ s/\`/\\\`/sg;
+   $STR = qq("$STR");
 
    return($STR);
 }

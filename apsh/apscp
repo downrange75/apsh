@@ -86,9 +86,6 @@ for (@THREADS){
 # passed and run the command.
 ##############################
 sub RunCMD {
-   $_[0] =~ s/^://;
-   $_[0] =~ s/:$//;
-
    my (@NODECFG) = split(/:/, $_[0]);
 
    open(FH, "scp -o BatchMode=yes $RECURSIVE @LFILES $NODECFG[1]\@$NODECFG[0]:$RFILE 2>&1 |");

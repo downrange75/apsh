@@ -33,16 +33,16 @@ my $ALLFLAG    = "0";
 sub GenNodes {
    for (split(/,/, $_[0])){
       if ($_ =~ s/^-//){
-         $GREPV_STRING .= "| grep -v \"\[,:\]$_\[:,\]\" ";
+         $GREPV_STRING .= "| grep -v \"\\(:\\|,\\|^\\)$_\\(:\\|,\\|\$\\)\" ";
       }else{
          if (($_ eq "all") || ($ALLFLG)){
             $ALLFLG = "1";
          }else{
-            $GREP_STRING .= "-e \"\[,:\]$_\[:,\]\" ";
+            $GREP_STRING .= "-e \"\\(:\\|,\\|^\\)$_\\(:\\|,\\|\$\\)\" ";
          }
       }
 
-      if (($_ ne "all") && (! `cat $NODEFILE | grep \"\[,:\]$_\[:,\]\" | grep -v "^#"`)){
+      if (($_ ne "all") && (! `cat $NODEFILE | grep \"\\(:\\|,\\|^\\)$_\\(:\\|,\\|\$\\)\" | grep -v "^#"`)){
          print STDERR "ERROR: node or group \"$_\" not found!\n";
          exit(1);
       }

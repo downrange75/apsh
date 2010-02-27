@@ -56,11 +56,6 @@ for (@LFILES){
    }
 }
 
-if (! @NODES){
-   print STDERR "ERROR: node or group not found!\n";
-   exit(1);
-}
-
 ##############################
 # Main Code
 #

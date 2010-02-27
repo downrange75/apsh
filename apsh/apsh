@@ -39,11 +39,6 @@ my $CMD        = APSH::QuoteCMD($ARGV[1]);
 my @NODES      = APSH::GenNodes($ARGV[0]);
 my @THREADS    = ();
 
-if (! @NODES){
-   print STDERR "ERROR: node or group not found!\n";
-   exit(1);
-}
-
 ##############################
 # Main Code
 #

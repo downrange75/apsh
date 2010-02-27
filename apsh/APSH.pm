@@ -80,4 +80,19 @@ sub QuoteCMD{
    return($STR);
 }
 
+sub CreateThreads{
+   for (@_){
+      push(@THREADS, threads->create(\&main::RunCMD, "$_"));
+   }
+
+   ##############################
+   # Join and wait for completion
+   # to cleanup.
+   ##############################
+   for (@THREADS){
+      $_->join();
+   }
+}
+
+
 1;

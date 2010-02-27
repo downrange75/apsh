@@ -42,7 +42,6 @@ if (! $ARGV[0] || ! $ARGV[1] || ! $ARGV[2]){
 my @LFILES     = split(/\s+/, $ARGV[1]);
 my $RFILE      = $ARGV[2];
 my @NODES      = APSH::GenNodes($ARGV[0]);
-my @THREADS    = ();
 my $RECURSIVE  = "";
 
 for (@LFILES){
@@ -56,23 +55,7 @@ for (@LFILES){
    }
 }
 
-##############################
-# Main Code
-#
-# For each node found, start
-# a new thread and run cmd.
-##############################
-for (@NODES){
-   push(@THREADS, threads->create(\&RunCMD, "$_"));
-}
-
-##############################
-# Join and wait for completion
-# to cleanup.
-##############################
-for (@THREADS){
-   $_->join();
-}
+APSH::CreateThreads(@NODES);
 
 ##############################
 # RunCMD()

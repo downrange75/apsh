@@ -16,6 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##################################################################################
 package APSH;
+use threads;
 
 our @ISA       = qw(Exporter);
 our @EXPORT    = qw(GenNodes, QuoteCMD, CreateThreads);

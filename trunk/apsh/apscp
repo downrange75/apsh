@@ -16,7 +16,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##################################################################################
 use lib "/usr/local/lib/perl";
-use threads;
 use APSH;
 
 ##############################

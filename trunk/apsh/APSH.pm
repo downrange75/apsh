@@ -48,11 +48,20 @@ sub GenNodes {
       }
    }
 
+   my @NODES = ();
+
    if ($ALLFLG){
-      return(`cat $NODEFILE $GREPV_STRING | grep -v "^#"`);
+      @NODES = `cat $NODEFILE $GREPV_STRING | grep -v "^#"`;
    }else{
-      return(`cat $NODEFILE | grep $GREP_STRING $GREPV_STRING | grep -v "^#"`);
+      @NODES = `cat $NODEFILE | grep $GREP_STRING $GREPV_STRING | grep -v "^#"`;
    }
+
+   if (! @NODES){
+      print STDERR "ERROR: node or group not found!\n";
+      exit(1);
+   }
+
+   return(@NODES);
 }
 
 ##############################

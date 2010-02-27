@@ -18,7 +18,7 @@
 package APSH;
 
 our @ISA       = qw(Exporter);
-our @EXPORT_OK = qw(GenNodes, QuoteCMD);
+our @EXPORT    = qw(GenNodes, QuoteCMD, CreateThreads);
 
 my $NODEFILE   = '/etc/apsh/nodes.tab';
 my $ALLFLAG    = "0";

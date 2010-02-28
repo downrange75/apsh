@@ -16,13 +16,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##################################################################################
 package APSH;
+use strict;
 use threads;
 
 our @ISA       = qw(Exporter);
 our @EXPORT    = qw(GenNodes, QuoteCMD, CreateThreads);
 
 my $NODEFILE   = '/etc/apsh/nodes.tab';
-my $ALLFLAG    = "0";
 
 ##############################
 # GenNodes()
@@ -32,6 +32,8 @@ my $ALLFLAG    = "0";
 # the first arg passed in cmdline.
 ##############################
 sub GenNodes {
+   my ($ALLFLG, $GREPV_STRING, $GREP_STRING) = "";
+
    for (split(/,/, $_[0])){
       if ($_ =~ s/^-//){
          $GREPV_STRING .= "| grep -v \"\\(:\\|,\\|^\\)$_\\(:\\|,\\|\$\\)\" ";
@@ -81,15 +83,20 @@ sub QuoteCMD{
    return($STR);
 }
 
+##############################
+# CreateThreads()()
+#
+# For each node passed in the
+# config array - start a thread.
+##############################
 sub CreateThreads{
-   for (@_){
+   my @NODES = @_;
+   my @THREADS = ();
+
+   for (@NODES){
       push(@THREADS, threads->create(\&main::RunCMD, "$_"));
    }
 
-   ##############################
-   # Join and wait for completion
-   # to cleanup.
-   ##############################
    for (@THREADS){
       $_->join();
    }

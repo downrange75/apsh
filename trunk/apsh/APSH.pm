@@ -35,17 +35,19 @@ sub GenNodes {
    my ($ALLFLG, $GREPV_STRING, $GREP_STRING) = "";
 
    for (split(/,/, $_[0])){
+      $_ =~ tr/A-Z/a-z/;
+
       if ($_ =~ s/^-//){
-         $GREPV_STRING .= "| grep -v \"\\(:\\|,\\|^\\)$_\\(:\\|,\\|\$\\)\" ";
+         $GREPV_STRING .= "| grep -iv \"\\(:\\|,\\|^\\)$_\\(:\\|,\\|\$\\)\" ";
       }else{
          if (($_ eq "all") || ($ALLFLG)){
             $ALLFLG = "1";
          }else{
-            $GREP_STRING .= "-e \"\\(:\\|,\\|^\\)$_\\(:\\|,\\|\$\\)\" ";
+            $GREP_STRING .= "-ie \"\\(:\\|,\\|^\\)$_\\(:\\|,\\|\$\\)\" ";
          }
       }
 
-      if (($_ ne "all") && (! `cat $NODEFILE | grep \"\\(:\\|,\\|^\\)$_\\(:\\|,\\|\$\\)\" | grep -v "^#"`)){
+      if (($_ ne "all") && (! `cat $NODEFILE | grep -i \"\\(:\\|,\\|^\\)$_\\(:\\|,\\|\$\\)\" | grep -v "^#"`)){
          print STDERR "ERROR: node or group \"$_\" not found!\n";
          exit(1);
       }

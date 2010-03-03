@@ -30,7 +30,7 @@ my $RECURSIVE       = "";
 ##############################
 # Error checking
 ##############################
-if (! @LFILES || ! ($DEST =~ /:/)){
+if (! @LFILES || ! ($DEST =~ /:/) || ! $RFILE){
    if ((! @LFILES) || !($DEST =~ /:/)){
       print STDERR "Usage: apscp <FILE> <NODEORGROUP[,NODEORGROUP[,..]]>:[DESTINATION] \n";
 

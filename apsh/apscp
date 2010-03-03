@@ -20,14 +20,22 @@ use lib "/usr/local/lib/perl";
 use APSH;
 
 ##############################
+# Global Variables
+##############################
+my $DEST            = pop(@ARGV);
+my ($RANGE,$RFILE)  = split(/:/, $DEST);
+my @LFILES          = @ARGV;
+my $RECURSIVE       = "";
+
+##############################
 # Error checking
 ##############################
-if (! $ARGV[0] || ! $ARGV[1] || ! $ARGV[2]){
-   if ((! $ARGV[0]) || (! $ARGV[1])){
-      print STDERR "Usage: apscp <NODEORGROUP[,NODEORGROUP[,..]]> <LOCALFILE> [REMOTEFILE]\n";
+if (! @LFILES || ! ($DEST =~ /:/)){
+   if ((! @LFILES) || !($DEST =~ /:/)){
+      print STDERR "Usage: apscp <FILE> <NODEORGROUP[,NODEORGROUP[,..]]>:[DESTINATION] \n";
 
-      if ($ARGV[0]){
-         print STDERR "\nERROR: No local file or directory name!\n";
+      if (! ($DEST =~ /:/)){
+         print STDERR "\nERROR: no node or group!\n";
       }
 
       exit(1);
@@ -35,14 +43,6 @@ if (! $ARGV[0] || ! $ARGV[1] || ! $ARGV[2]){
       print STDERR "WARNING: No remote file or directory name! Assuming ~/.\n";
    }
 }
-
-##############################
-# Global Variables
-##############################
-my @LFILES     = split(/\s+/, $ARGV[1]);
-my $RFILE      = $ARGV[2];
-my @NODES      = APSH::GenNodes($ARGV[0]);
-my $RECURSIVE  = "";
 
 for (@LFILES){
    if (! -e $_){
@@ -54,6 +54,8 @@ for (@LFILES){
       $RECURSIVE = "-r";
    }
 }
+
+my @NODES = APSH::GenNodes($RANGE);
 
 APSH::CreateThreads(@NODES);
 

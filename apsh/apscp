@@ -76,5 +76,9 @@ sub RunCMD {
 
    close(FH);
 
-   print "$NODECFG[0]: ...done\n";
+   if ($ENV{'TERM'} eq "xterm"){
+      print "\033[1;32m$NODECFG[0]:\033[00m ...done\n";
+   }else{
+      print "$NODECFG[0]: ...done\n";
+   }
 }

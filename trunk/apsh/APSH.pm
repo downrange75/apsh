@@ -56,7 +56,7 @@ sub GenNodes {
    my @NODES = ();
 
    if ($ALLFLG){
-      @NODES = `cat $NODEFILE $GREPV_STRING | grep -v "^#"`;
+      @NODES = `cat $NODEFILE $GREPV_STRING | grep -v "^#" | grep -v '\\-all'`;
    }else{
       @NODES = `cat $NODEFILE | grep $GREP_STRING $GREPV_STRING | grep -v "^#"`;
    }

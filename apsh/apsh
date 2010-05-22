@@ -49,13 +49,15 @@ APSH::CreateThreads(@NODES);
 sub RunCMD {
    my (@NODECFG) = split(/:/, $_[0]);
 
+   my $PADDING = APSH::GetPadding($NODECFG[0]);
+
    open(FH, "ssh -o BatchMode=yes -l $NODECFG[1] $NODECFG[0] $CMD 2>&1 |");
 
    while(<FH>){
       if ($ENV{'TERM'} eq "xterm"){
-         print "\033[1;32m$NODECFG[0]:\033[00m $_";
+         print "\033[1;32m$NODECFG[0]:\033[00m $PADDING$_";
       }else{
-         print "$NODECFG[0]: $_";
+         print "$NODECFG[0]: $PADDING$_";
       }
    }
 

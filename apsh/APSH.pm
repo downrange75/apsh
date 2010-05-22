@@ -19,10 +19,11 @@ package APSH;
 use strict;
 use threads;
 
-our @ISA       = qw(Exporter);
-our @EXPORT    = qw(GenNodes, QuoteCMD, CreateThreads);
+our @ISA        = qw(Exporter);
+our @EXPORT     = qw(GenNodes, QuoteCMD, CreateThreads, GetPadding);
 
-my $NODEFILE   = '/etc/apsh/nodes.tab';
+my $NODEFILE    = '/etc/apsh/nodes.tab';
+my $MAXNAME_L   = "0";
 
 ##############################
 # GenNodes()
@@ -70,7 +71,7 @@ sub GenNodes {
 }
 
 ##############################
-# QuoteCMD()
+# QuoteCMD($CMD)
 #
 # Escape special chars in $CMD
 ##############################
@@ -86,7 +87,7 @@ sub QuoteCMD{
 }
 
 ##############################
-# CreateThreads()()
+# CreateThreads(@NODES)
 #
 # For each node passed in the
 # config array - start a thread.
@@ -96,6 +97,12 @@ sub CreateThreads{
    my @THREADS = ();
 
    for (@NODES){
+      my @NODEPROPERTIES = split(/:/, $_);
+
+      if (length($NODEPROPERTIES[0]) > $MAXNAME_L){
+         $MAXNAME_L = length($NODEPROPERTIES[0]);
+      }
+
       push(@THREADS, threads->create(\&main::RunCMD, "$_"));
    }
 
@@ -104,5 +111,25 @@ sub CreateThreads{
    }
 }
 
+##############################
+# GetPadding($NODENAME)
+#
+# Return padding based on diff
+# between this hostname and the
+# longest hostname.
+##############################
+sub GetPadding{
+   my $NODE = $_[0];
+
+   my $PADDING = "";
+
+   my $LENGTHDIFF = $MAXNAME_L - length($NODE);
+
+   for (1 .. $LENGTHDIFF){
+      $PADDING .= " ";
+   }
+
+   return($PADDING);
+}
 
 1;

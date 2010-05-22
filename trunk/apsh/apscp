@@ -68,6 +68,8 @@ APSH::CreateThreads(@NODES);
 sub RunCMD {
    my (@NODECFG) = split(/:/, $_[0]);
 
+   my $PADDING = APSH::GetPadding($NODECFG[0]);
+
    open(FH, "scp -o BatchMode=yes $RECURSIVE @LFILES $NODECFG[1]\@$NODECFG[0]:$RFILE 2>&1 |");
 
    while(<FH>){
@@ -77,8 +79,8 @@ sub RunCMD {
    close(FH);
 
    if ($ENV{'TERM'} eq "xterm"){
-      print "\033[1;32m$NODECFG[0]:\033[00m ...done\n";
+      print "\033[1;32m$NODECFG[0]:\033[00m $PADDING...done\n";
    }else{
-      print "$NODECFG[0]: ...done\n";
+      print "$NODECFG[0]: $PADDING...done\n";
    }
 }

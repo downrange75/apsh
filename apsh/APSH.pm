@@ -24,6 +24,7 @@ our @EXPORT     = qw(GenNodes, QuoteCMD, CreateThreads, GetPadding);
 
 my $NODEFILE    = '/etc/apsh/nodes.tab';
 my $MAXNAME_L   = "0";
+my @COLORS      = ("");
 
 ##############################
 # GenNodes()
@@ -57,14 +58,63 @@ sub GenNodes {
    my @NODES = ();
 
    if ($ALLFLG){
-      @NODES = `cat $NODEFILE $GREPV_STRING | grep -v "^#" | grep -v '\\-all'`;
+      @NODES = `cat $NODEFILE $GREPV_STRING | grep -v "^#" | grep -v '\\-all' | sort`;
    }else{
-      @NODES = `cat $NODEFILE | grep $GREP_STRING $GREPV_STRING | grep -v "^#"`;
+      @NODES = `cat $NODEFILE | grep $GREP_STRING $GREPV_STRING | grep -v "^#" | sort`;
    }
 
    if (! @NODES){
       print STDERR "ERROR: node or group not found!\n";
       exit(1);
+   }
+
+   ####################
+   # Find the longest hostname
+   # 
+   # Assign a color to each
+   # node.
+   ####################
+   my @BGCOLORS   = qw(47 46 45 44 43 42 41 40);
+   my @FGCOLORS   = qw(37 36 35 34 33 32 31 30);
+   my $FGCOLOR    = undef;
+   my $BGCOLOR    = undef;
+   my $BRIGHTNESS = "1";
+
+   my @BGCOLORS_t = @BGCOLORS;
+   my @FGCOLORS_t = @FGCOLORS;
+
+   for (@NODES){
+      my @NODEPROPERTIES = split(/:/, $_);
+
+      # Find the longest hostname
+      if (length($NODEPROPERTIES[0]) > $MAXNAME_L){
+         $MAXNAME_L = length($NODEPROPERTIES[0]);
+      }
+
+      $FGCOLOR = pop(@FGCOLORS_t);
+
+      # Avoid same color BG and FG
+      if ($BGCOLOR && ($FGCOLOR eq ($BGCOLOR - 10))){
+         $FGCOLOR = pop(@FGCOLORS_t);
+      }
+
+      if (! @FGCOLORS_t){
+         @FGCOLORS_t = @FGCOLORS;
+
+         $BGCOLOR = pop(@BGCOLORS_t) . "m\033\[";
+
+         if ($BRIGHTNESS){
+            $BRIGHTNESS = "0";
+         }else{
+            $BRIGHTNESS = "1";
+         }
+      }
+
+      if (! @BGCOLORS_t){
+         @BGCOLORS_t = @BGCOLORS;
+      }
+
+      $_ .= ":$BGCOLOR$BRIGHTNESS;$FGCOLOR";
    }
 
    return(@NODES);
@@ -93,16 +143,10 @@ sub QuoteCMD{
 # config array - start a thread.
 ##############################
 sub CreateThreads{
-   my @NODES = @_;
-   my @THREADS = ();
+   my @NODES      = @_;
+   my @THREADS    = ();
 
    for (@NODES){
-      my @NODEPROPERTIES = split(/:/, $_);
-
-      if (length($NODEPROPERTIES[0]) > $MAXNAME_L){
-         $MAXNAME_L = length($NODEPROPERTIES[0]);
-      }
-
       push(@THREADS, threads->create(\&main::RunCMD, "$_"));
    }
 

@@ -37,6 +37,13 @@ if (! $ARGV[0] || ! $ARGV[1]){
 ##############################
 my @NODES      = APSH::GenNodes($ARGV[0]);
 my $CMD        = APSH::QuoteCMD($ARGV[1]);
+my $COLOR      = undef;
+
+if ($ARGV[2] =~ /c/){
+   $COLOR = "1";
+}else{
+   $COLOR = "0";
+}
 
 APSH::CreateThreads(@NODES);
 
@@ -54,8 +61,8 @@ sub RunCMD {
    open(FH, "ssh -o BatchMode=yes -l $NODECFG[1] $NODECFG[0] $CMD 2>&1 |");
 
    while(<FH>){
-      if ($ENV{'TERM'} eq "xterm"){
-         print "\033[1;32m$NODECFG[0]:\033[00m $PADDING$_";
+      if ($ENV{'TERM'} eq "xterm" && $COLOR){
+         print "\033\[$NODECFG[3]m$NODECFG[0]:\033\[0m $PADDING$_";
       }else{
          print "$NODECFG[0]: $PADDING$_";
       }

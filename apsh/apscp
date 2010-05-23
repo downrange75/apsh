@@ -25,7 +25,7 @@ use APSH;
 my $DEST            = pop(@ARGV);
 my ($RANGE,$RFILE)  = split(/:/, $DEST);
 my @LFILES          = @ARGV;
-my $RECURSIVE       = "";
+my $RECURSIVE       = undef;
 
 ##############################
 # Error checking
@@ -73,14 +73,10 @@ sub RunCMD {
    open(FH, "scp -o BatchMode=yes $RECURSIVE @LFILES $NODECFG[1]\@$NODECFG[0]:$RFILE 2>&1 |");
 
    while(<FH>){
-      print "$NODECFG[0]: $_";
+      print "$NODECFG[0]: $PADDING$_";
    }
 
    close(FH);
 
-   if ($ENV{'TERM'} eq "xterm"){
-      print "\033[1;32m$NODECFG[0]:\033[00m $PADDING...done\n";
-   }else{
-      print "$NODECFG[0]: $PADDING...done\n";
-   }
+   print "$NODECFG[0]: $PADDING...complete\n";
 }

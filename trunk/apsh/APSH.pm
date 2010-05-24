@@ -24,7 +24,6 @@ our @EXPORT     = qw(GenNodes, QuoteCMD, CreateThreads, GetPadding);
 
 my $NODEFILE    = '/etc/apsh/nodes.tab';
 my $MAXNAME_L   = "0";
-my @COLORS      = ("");
 
 ##############################
 # GenNodes()

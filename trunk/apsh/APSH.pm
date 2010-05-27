@@ -24,6 +24,7 @@ our @EXPORT     = qw(GenNodes, QuoteCMD, CreateThreads, GetPadding);
 
 my $NODEFILE    = '/etc/apsh/nodes.tab';
 my $MAXNAME_L   = "0";
+our $COLOR_FLAG = undef;
 
 ##############################
 # GenNodes()
@@ -69,19 +70,7 @@ sub GenNodes {
 
    ####################
    # Find the longest hostname
-   # 
-   # Assign a color to each
-   # node.
    ####################
-   my @BGCOLORS   = qw(47 46 45 44 43 42 41 40);
-   my @FGCOLORS   = qw(37 36 35 34 33 32 31 30);
-   my $FGCOLOR    = undef;
-   my $BGCOLOR    = undef;
-   my $BRIGHTNESS = "1";
-
-   my @BGCOLORS_t = @BGCOLORS;
-   my @FGCOLORS_t = @FGCOLORS;
-
    for (@NODES){
       my @NODEPROPERTIES = split(/:/, $_);
 
@@ -89,31 +78,48 @@ sub GenNodes {
       if (length($NODEPROPERTIES[0]) > $MAXNAME_L){
          $MAXNAME_L = length($NODEPROPERTIES[0]);
       }
+   }
 
-      $FGCOLOR = pop(@FGCOLORS_t);
-
-      # Avoid same color BG and FG
-      if ($BGCOLOR && ($FGCOLOR eq ($BGCOLOR - 10))){
+   ####################
+   # Assign a color to each
+   # node.
+   ####################
+   if ($COLOR_FLAG){
+      my @BGCOLORS   = qw(47 46 45 44 43 42 41 40);
+      my @FGCOLORS   = qw(37 36 35 34 33 32 31 30);
+      my $FGCOLOR    = undef;
+      my $BGCOLOR    = undef;
+      my $BRIGHTNESS = "1";
+   
+      my @BGCOLORS_t = @BGCOLORS;
+      my @FGCOLORS_t = @FGCOLORS;
+   
+      for (@NODES){
          $FGCOLOR = pop(@FGCOLORS_t);
-      }
-
-      if (! @FGCOLORS_t){
-         @FGCOLORS_t = @FGCOLORS;
-
-         $BGCOLOR = pop(@BGCOLORS_t) . "m\033\[";
-
-         if ($BRIGHTNESS){
-            $BRIGHTNESS = "0";
-         }else{
-            $BRIGHTNESS = "1";
+   
+         # Avoid same color BG and FG
+         if ($BGCOLOR && ($FGCOLOR eq ($BGCOLOR - 10))){
+            $FGCOLOR = pop(@FGCOLORS_t);
          }
+   
+         if (! @FGCOLORS_t){
+            @FGCOLORS_t = @FGCOLORS;
+   
+            $BGCOLOR = pop(@BGCOLORS_t) . "m\033\[";
+   
+            if ($BRIGHTNESS){
+               $BRIGHTNESS = "0";
+            }else{
+               $BRIGHTNESS = "1";
+            }
+         }
+   
+         if (! @BGCOLORS_t){
+            @BGCOLORS_t = @BGCOLORS;
+         }
+   
+         $_ .= ":$BGCOLOR$BRIGHTNESS;$FGCOLOR";
       }
-
-      if (! @BGCOLORS_t){
-         @BGCOLORS_t = @BGCOLORS;
-      }
-
-      $_ .= ":$BGCOLOR$BRIGHTNESS;$FGCOLOR";
    }
 
    return(@NODES);

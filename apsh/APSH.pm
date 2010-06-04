@@ -20,7 +20,7 @@ use strict;
 use threads;
 
 our @ISA        = qw(Exporter);
-our @EXPORT     = qw(GenNodes, QuoteCMD, CreateThreads, GetPadding);
+our @EXPORT     = qw(GenNodes, QuoteCMD, CreateThreads, GetPadding, ReturnAllNodes);
 
 my $NODEFILE    = '/etc/apsh/nodes.tab';
 my $MAXNAME_L   = "0";
@@ -179,6 +179,12 @@ sub GetPadding{
    }
 
    return($PADDING);
+}
+
+sub ReturnAllNodes{
+   my @AllNodes = `cat $NODEFILE | grep -v "^#"`;
+
+   return(@AllNodes);
 }
 
 1;

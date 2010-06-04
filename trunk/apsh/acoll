@@ -1,0 +1,75 @@
+#!/usr/bin/perl
+##################################################################################
+# Copyright (C) 2010  Chris Rutledge <rutledge.chris@gmail.com>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+##################################################################################
+use strict;
+use lib "/usr/local/lib/perl";
+use APSH;
+
+my %OUTPUT   = ();
+my @C_OUTPUT = ();
+
+while (<STDIN>){
+   chomp($_);
+
+   $_ =~ /(^[a-zA-Z0-9]*):\s+(.*)/;
+
+   push(@{$OUTPUT{$1}}, "$2\n");
+}
+
+for my $KEY (keys %OUTPUT){
+   my ($FLAG, $i) = undef;
+
+   for $i (0 .. $#C_OUTPUT){
+      if ("@{$C_OUTPUT[$i]{'OUTPUT'}}" eq "@{$OUTPUT{$KEY}}"){
+         $FLAG  = "1";
+         push(@{$C_OUTPUT[$i]{'HOSTS'}}, "$KEY");
+      }
+   }
+
+   if (! $FLAG){
+      $i                         = @C_OUTPUT;
+      @{$C_OUTPUT[$i]{'OUTPUT'}} = @{$OUTPUT{$KEY}};
+
+      push(@{$C_OUTPUT[$i]{'HOSTS'}}, "$KEY");
+   }
+}
+
+for my $i (0 .. $#C_OUTPUT){
+   my $NODES = groupNodes(@{$C_OUTPUT[$i]{'HOSTS'}});
+
+   print "##########################################\n";
+   print "$NODES\n";
+   print "##########################################\n";
+
+   for (@{$C_OUTPUT[$i]{'OUTPUT'}}){
+      print $_;
+   }
+
+   print "\n\n";
+}
+
+
+sub groupNodes{
+   my @NODES = "@_";
+   my @AllNodes = APSH::ReturnAllNodes();
+
+   my ($a, $b) = undef;
+
+   @NODES = sort { lc($a) cmp lc($b) } @NODES;
+
+   return("@NODES");
+}

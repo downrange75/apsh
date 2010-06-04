@@ -17,8 +17,8 @@ then
    mkdir -p /etc/apsh
 fi
 
-echo "Installing apsh and apscp..."
-cp apsh apscp /usr/local/bin/.
+echo "Installing apsh, apscp and acoll..."
+cp apsh apscp acoll /usr/local/bin/.
 echo "Installing APSH.pm..."
 cp APSH.pm /usr/local/lib/perl/.
 
@@ -28,4 +28,4 @@ then
    cp nodes.tab /etc/apsh
 fi
 
-chmod +x /usr/local/bin/apsh /usr/local/bin/apscp
+chmod +x /usr/local/bin/apsh /usr/local/bin/apscp /usr/local/bin/acoll

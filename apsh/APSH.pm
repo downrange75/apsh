@@ -2,6 +2,8 @@
 ##################################################################################
 # Copyright (C) 2010  Chris Rutledge <rutledge.chris@gmail.com>
 #
+# http://code.google.com/p/apsh
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -24,7 +26,6 @@ our @EXPORT     = qw(GenNodes, QuoteCMD, CreateThreads, GetPadding, ReturnAllNod
 
 my $NODEFILE    = '/etc/apsh/nodes.tab';
 my $MAXNAME_L   = "0";
-our $COLOR_FLAG = undef;
 
 ##############################
 # GenNodes()
@@ -34,44 +35,77 @@ our $COLOR_FLAG = undef;
 # the first arg passed in cmdline.
 ##############################
 sub GenNodes {
-   my ($ALLFLG, $GREPV_STRING, $GREP_STRING) = "";
+   my ($GREPV_STRING, $GREP_STRING) = "";
 
+   my (@tNODES, @NODES, @INCLUDE, @EXCLUDE)  = ();
+
+   @tNODES = `cat $NODEFILE | grep -v "^#"`;
+
+   ##############################
+   # Build INCLUDE and EXCLUDE arrays
+   ##############################
    for (split(/,/, $_[0])){
       $_ =~ tr/A-Z/a-z/;
 
       if ($_ =~ s/^-//){
-         $GREPV_STRING .= "| grep -iv \"\\(:\\|,\\|^\\)$_\\(:\\|,\\|\$\\)\" ";
+         push(@EXCLUDE, $_);
       }else{
-         if (($_ eq "all") || ($ALLFLG)){
-            $ALLFLG = "1";
-         }else{
-            $GREP_STRING .= "-ie \"\\(:\\|,\\|^\\)$_\\(:\\|,\\|\$\\)\" ";
+         push(@INCLUDE, $_);
+      }
+   }
+
+   for my $Element (0 .. $#tNODES){
+      my $CurrLine = $tNODES[$Element];
+
+      $CurrLine =~ tr/A-Z/a-z/;
+
+      ##############################
+      # Look for nodes to be included
+      ##############################
+      for (@INCLUDE){
+         if (($_ eq "all") || ($CurrLine =~ /(:|,|^)$_(:|,|$)/)){
+            if (($_ eq "all") && ($CurrLine =~ /-all/)){
+               delete($tNODES[$Element]);
+            }else{
+               push(@NODES, $CurrLine);
+            }
          }
       }
+   }
 
-      if (($_ ne "all") && (! `cat $NODEFILE | grep -i \"\\(:\\|,\\|^\\)$_\\(:\\|,\\|\$\\)\" | grep -v "^#"`)){
-         print STDERR "ERROR: node or group \"$_\" not found!\n";
-         exit(1);
+   for my $Element (0 .. $#NODES){
+      my $CurrLine = $NODES[$Element];
+      
+      $CurrLine =~ tr/A-Z/a-z/;
+
+      ##############################
+      # Look for nodes to be excluded
+      # and remove them when found
+      ##############################
+      for (@EXCLUDE){
+         if ($CurrLine =~ /(:|,|^)$_(:|,|$)/){
+            delete($NODES[$Element]);
+         }
       }
    }
 
-   my @NODES = ();
+   @tNODES = ();
 
-   if ($ALLFLG){
-      @NODES = `cat $NODEFILE $GREPV_STRING | grep -v "^#" | grep -v '\\-all' | sort`;
-   }else{
-      @NODES = `cat $NODEFILE | grep $GREP_STRING $GREPV_STRING | grep -v "^#" | sort`;
+   for (@NODES){
+      if (defined($_)){
+         push(@tNODES, $_);
+      }
    }
 
-   if (! @NODES){
-      print STDERR "ERROR: node or group not found!\n";
+   if (! @tNODES){
+      print STDERR "ERROR: no nodes found!\n";
       exit(1);
    }
 
    ####################
    # Find the longest hostname
    ####################
-   for (@NODES){
+   for (@tNODES){
       my @NODEPROPERTIES = split(/:/, $_);
 
       # Find the longest hostname
@@ -80,49 +114,7 @@ sub GenNodes {
       }
    }
 
-   ####################
-   # Assign a color to each
-   # node.
-   ####################
-   if ($COLOR_FLAG){
-      my @BGCOLORS   = qw(47 46 45 44 43 42 41 40);
-      my @FGCOLORS   = qw(37 36 35 34 33 32 31 30);
-      my $FGCOLOR    = undef;
-      my $BGCOLOR    = undef;
-      my $BRIGHTNESS = "1";
-   
-      my @BGCOLORS_t = @BGCOLORS;
-      my @FGCOLORS_t = @FGCOLORS;
-   
-      for (@NODES){
-         $FGCOLOR = pop(@FGCOLORS_t);
-   
-         # Avoid same color BG and FG
-         if ($BGCOLOR && ($FGCOLOR eq ($BGCOLOR - 10))){
-            $FGCOLOR = pop(@FGCOLORS_t);
-         }
-   
-         if (! @FGCOLORS_t){
-            @FGCOLORS_t = @FGCOLORS;
-   
-            $BGCOLOR = pop(@BGCOLORS_t) . "m\033\[";
-   
-            if ($BRIGHTNESS){
-               $BRIGHTNESS = "0";
-            }else{
-               $BRIGHTNESS = "1";
-            }
-         }
-   
-         if (! @BGCOLORS_t){
-            @BGCOLORS_t = @BGCOLORS;
-         }
-   
-         $_ .= ":$BGCOLOR$BRIGHTNESS;$FGCOLOR";
-      }
-   }
-
-   return(@NODES);
+   return(@tNODES);
 }
 
 ##############################

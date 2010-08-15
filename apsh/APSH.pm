@@ -68,6 +68,7 @@ sub GenNodes {
                delete($tNODES[$Element]);
             }else{
                push(@NODES, $CurrLine);
+               $CurrLine = undef;
             }
          }
       }

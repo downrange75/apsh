@@ -51,10 +51,10 @@ for my $KEY (keys %OUTPUT){
 }
 
 for my $i (0 .. $#C_OUTPUT){
-   my $NODES = groupNodes(@{$C_OUTPUT[$i]{'HOSTS'}});
+   my @NODES = groupNodes(@{$C_OUTPUT[$i]{'HOSTS'}});
 
    print "##########################################\n";
-   print "$NODES\n";
+   print "@NODES\n";
    print "##########################################\n";
 
    for (@{$C_OUTPUT[$i]{'OUTPUT'}}){
@@ -63,7 +63,6 @@ for my $i (0 .. $#C_OUTPUT){
 
    print "\n\n";
 }
-
 
 sub groupNodes{
    my @NODES = "@_";

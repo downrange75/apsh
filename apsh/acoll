@@ -43,7 +43,8 @@ for my $KEY (keys %OUTPUT){
    }
 
    if (! $FLAG){
-      $i                         = @C_OUTPUT;
+      $i = @C_OUTPUT;
+
       @{$C_OUTPUT[$i]{'OUTPUT'}} = @{$OUTPUT{$KEY}};
 
       push(@{$C_OUTPUT[$i]{'HOSTS'}}, "$KEY");
@@ -51,7 +52,7 @@ for my $KEY (keys %OUTPUT){
 }
 
 for my $i (0 .. $#C_OUTPUT){
-   my @NODES = groupNodes(@{$C_OUTPUT[$i]{'HOSTS'}});
+   my @NODES = sort { lc($a) cmp lc($b) }@{$C_OUTPUT[$i]{'HOSTS'}};
 
    print "##########################################\n";
    print "@NODES\n";
@@ -62,15 +63,4 @@ for my $i (0 .. $#C_OUTPUT){
    }
 
    print "\n\n";
-}
-
-sub groupNodes{
-   my @NODES = "@_";
-   my @AllNodes = APSH::ReturnAllNodes();
-
-   my ($a, $b) = undef;
-
-   @NODES = sort { lc($a) cmp lc($b) } @NODES;
-
-   return("@NODES");
 }

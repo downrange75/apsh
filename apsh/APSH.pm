@@ -39,7 +39,7 @@ sub GenNodes {
 
    my (@tNODES, @NODES, @INCLUDE, @EXCLUDE)  = ();
 
-   @tNODES = `cat $NODEFILE | grep -v "^#"`;
+   @tNODES = GetAllNodes();
 
    ##############################
    # Build INCLUDE and EXCLUDE arrays
@@ -174,16 +174,16 @@ sub GetPadding{
    return($PADDING);
 }
 
-sub ReturnAllNodes{
-   my @AllNodes = `cat $NODEFILE | grep -v "^#"`;
+sub GetAllNodes{
+   my @AllNodes = `cat $NODEFILE | grep -v "^#" | grep -v "^[[:space:]]*\$" | sort`;
 
    return(@AllNodes);
 }
 
 sub GetNodeGroups{
-   my %GROUPS = ();
+   my %NODEGROUPS = ();
 
-   my @ALL_NODES = `cat $NODEFILE | grep -v "^#"`;
+   my @ALL_NODES = GetAllNodes();
 
    for (@ALL_NODES){
       chomp($_);
@@ -199,15 +199,15 @@ sub GetNodeGroups{
             next;
          }
 
-         $GROUPS{$_}{'NODES'} .= " $HOST_DETAILS[0]";
+         $NODEGROUPS{$_}{'NODES'} .= " $HOST_DETAILS[0]";
 
-         $GROUPS{$_}{'NODES'} =~ s/^ //;
+         $NODEGROUPS{$_}{'NODES'} =~ s/^ //;
 
-         $GROUPS{$_}{'SIZE'}++;
+         $NODEGROUPS{$_}{'SIZE'}++;
       }
    }
 
-   return(\%GROUPS);
+   return(\%NODEGROUPS);
 }
 
 1;

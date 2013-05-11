@@ -180,4 +180,34 @@ sub ReturnAllNodes{
    return(@AllNodes);
 }
 
+sub GetNodeGroups{
+   my %GROUPS = ();
+
+   my @ALL_NODES = `cat $NODEFILE | grep -v "^#"`;
+
+   for (@ALL_NODES){
+      chomp($_);
+
+      my @DETAILS = split(/:/, $_);
+
+      my @GROUP_DETAILS = split(/,/, $DETAILS[2]);
+
+      my @HOST_DETAILS = split(/,/, $DETAILS[0]);
+
+      for (@GROUP_DETAILS){
+         if ($_ =~ /-all/){
+            next;
+         }
+
+         $GROUPS{$_}{'NODES'} .= " $HOST_DETAILS[0]";
+
+         $GROUPS{$_}{'NODES'} =~ s/^ //;
+
+         $GROUPS{$_}{'SIZE'}++;
+      }
+   }
+
+   return(\%GROUPS);
+}
+
 1;

@@ -175,7 +175,7 @@ sub GetPadding{
 }
 
 sub GetAllNodes{
-   my @AllNodes = `cat $NODEFILE | grep -v "^#" | grep -v "^[[:space:]]*\$" | sort`;
+   my @AllNodes = `cat $NODEFILE | grep -v "^[[:space:]]*#" | grep -v "^[[:space:]]*\$" | sort`;
 
    return(@AllNodes);
 }

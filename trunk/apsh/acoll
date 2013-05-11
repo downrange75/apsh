@@ -52,10 +52,10 @@ for my $KEY (keys %OUTPUT){
 }
 
 for my $i (0 .. $#C_OUTPUT){
-   my @NODES = sort { lc($a) cmp lc($b) }@{$C_OUTPUT[$i]{'HOSTS'}};
+   my $NODES = main::GroupNodes(sort { lc($a) cmp lc($b) }@{$C_OUTPUT[$i]{'HOSTS'}});
 
    print "##########################################\n";
-   print "@NODES\n";
+   print "$NODES\n";
    print "##########################################\n";
 
    for (@{$C_OUTPUT[$i]{'OUTPUT'}}){
@@ -63,4 +63,18 @@ for my $i (0 .. $#C_OUTPUT){
    }
 
    print "\n\n";
+}
+
+sub GroupNodes{
+   my $NODES = "@_";
+
+   my $GROUPS = APSH::GetNodeGroups();
+
+   foreach my $KEY (sort { $GROUPS->{$b}{'SIZE'} <=> $GROUPS->{$a}{'SIZE'} } keys %$GROUPS){
+      if ($NODES =~ /$GROUPS->{$KEY}{'NODES'}/){
+         $NODES =~ s/$GROUPS->{$KEY}{'NODES'}/$KEY/;
+      }
+   }
+
+   return($NODES);
 }

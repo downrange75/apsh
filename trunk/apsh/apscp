@@ -70,15 +70,19 @@ APSH::CreateThreads(@NODES);
 sub RunCMD {
    my (@NODECFG) = split(/:/, $_[0]);
 
-   my $PADDING = APSH::GetPadding($NODECFG[0]);
+   my (@HOST_DETAILS) = split(/,/, $NODECFG[0]);
 
-   open(FH, "scp -o BatchMode=yes -o LogLevel=quiet $RECURSIVE @LFILES $NODECFG[1]\@$NODECFG[0]:$RFILE 2>&1 |");
+   my $PADDING = APSH::GetPadding($HOST_DETAILS[0]);
+
+   $HOST_DETAILS[1] =~ s/\-p/\-P/;
+
+   open(FH, "scp $HOST_DETAILS[1] -o BatchMode=yes -o LogLevel=quiet $RECURSIVE @LFILES $NODECFG[1]\@$HOST_DETAILS[0]:$RFILE 2>&1 |");
 
    while(<FH>){
-      print "$NODECFG[0]: $PADDING$_";
+      print "$HOST_DETAILS[0]: $PADDING$_";
    }
 
    close(FH);
 
-   print "$NODECFG[0]: $PADDING...complete\n";
+   print "$HOST_DETAILS[0]: $PADDING...complete\n";
 }

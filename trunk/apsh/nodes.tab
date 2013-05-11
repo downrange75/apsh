@@ -1,1 +1,1 @@
-#node:user:groups,group1,group2
+#nodename[,<SSH_OPTIONS>]:username:comma,separated,groupnames

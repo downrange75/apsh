@@ -24,6 +24,8 @@ use APSH;
 my %OUTPUT   = ();
 my @C_OUTPUT = ();
 
+my $NODEGROUPS = APSH::GetNodeGroups();
+
 while (<STDIN>){
    chomp($_);
 
@@ -68,11 +70,9 @@ for my $i (0 .. $#C_OUTPUT){
 sub GroupNodes{
    my $NODES = "@_";
 
-   my $GROUPS = APSH::GetNodeGroups();
-
-   foreach my $KEY (sort { $GROUPS->{$b}{'SIZE'} <=> $GROUPS->{$a}{'SIZE'} } keys %$GROUPS){
-      if ($NODES =~ /$GROUPS->{$KEY}{'NODES'}/){
-         $NODES =~ s/$GROUPS->{$KEY}{'NODES'}/$KEY/;
+   foreach my $KEY (sort { $NODEGROUPS->{$b}{'SIZE'} <=> $NODEGROUPS->{$a}{'SIZE'} } keys %$NODEGROUPS){
+      if ($NODES =~ /$NODEGROUPS->{$KEY}{'NODES'}/){
+         $NODES =~ s/$NODEGROUPS->{$KEY}{'NODES'}/$KEY/;
       }
    }
 

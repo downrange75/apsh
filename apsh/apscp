@@ -68,21 +68,17 @@ APSH::CreateThreads(@NODES);
 # passed and run the command.
 ##############################
 sub RunCMD {
-   my (@NODECFG) = split(/:/, $_[0]);
+   my $NODECFG = $_[0];
 
-   my (@HOST_DETAILS) = split(/,/, $NODECFG[0]);
+   $NODECFG->{'SSH_OPTS'} =~ s/\-p/\-P/;
 
-   my $PADDING = APSH::GetPadding($HOST_DETAILS[0]);
-
-   $HOST_DETAILS[1] =~ s/\-p/\-P/;
-
-   open(FH, "scp $HOST_DETAILS[1] -o BatchMode=yes -o LogLevel=quiet $RECURSIVE @LFILES $NODECFG[1]\@$HOST_DETAILS[0]:$RFILE 2>&1 |");
+   open(FH, "scp $NODECFG->{'SSH_OPTS'} -o BatchMode=yes -o LogLevel=quiet $RECURSIVE @LFILES $NODECFG->{'USERNAME'}\@$NODECFG->{'HOSTNAME'}:$RFILE 2>&1 |");
 
    while(<FH>){
-      print "$HOST_DETAILS[0]: $PADDING$_";
+      print "$NODECFG->{'HOSTNAME'}: $NODECFG->{'PADDING'}$_";
    }
 
    close(FH);
 
-   print "$HOST_DETAILS[0]: $PADDING...complete\n";
+   print "$NODECFG->{'HOSTNAME'}: $NODECFG->{'PADDING'}...complete\n";
 }

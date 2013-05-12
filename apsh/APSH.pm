@@ -109,9 +109,11 @@ sub GenNodes {
    for (@tNODES){
       my @NODEPROPERTIES = split(/:/, $_);
 
+      my @SSH_DETAILS = split(/,/, $NODEPROPERTIES[0]);
+
       # Find the longest hostname
-      if (length($NODEPROPERTIES[0]) > $MAXNAME_L){
-         $MAXNAME_L = length($NODEPROPERTIES[0]);
+      if (length($SSH_DETAILS[0]) > $MAXNAME_L){
+         $MAXNAME_L = length($SSH_DETAILS[0]);
       }
    }
 
@@ -145,12 +147,28 @@ sub CreateThreads{
    my @THREADS    = ();
 
    for (@NODES){
-      push(@THREADS, threads->create(\&main::RunCMD, "$_"));
+      push(@THREADS, threads->create(\&main::RunCMD, ParseNodeLine($_)));
    }
 
    for (@THREADS){
       $_->join();
    }
+}
+
+sub ParseNodeLine{
+   my @NODE_DETAILS = split(/:/, $_[0]);
+
+   my @SSH_DETAILS = split(/,/, $NODE_DETAILS[0]);
+
+   my %NODE_CONFIG = ();
+
+   $NODE_CONFIG{'HOSTNAME'} = $SSH_DETAILS[0];
+   $NODE_CONFIG{'SSH_OPTS'} = $SSH_DETAILS[1];
+   $NODE_CONFIG{'USERNAME'} = $NODE_DETAILS[1];
+   $NODE_CONFIG{'GROUPS'}   = $NODE_DETAILS[2];
+   $NODE_CONFIG{'PADDING'}  = GetPadding($NODE_CONFIG{'HOSTNAME'});
+
+   return(\%NODE_CONFIG);
 }
 
 ##############################

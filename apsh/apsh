@@ -51,7 +51,7 @@ APSH::CreateThreads(@NODES);
 sub RunCMD {
    my $NODECFG = $_[0];
 
-   open(FH, "ssh -q -o BatchMode=yes $NODECFG->{'SSH_OPTS'} -l $NODECFG->{'USERNAME'} $NODECFG->{'HOSTNAME'} $CMD 2>&1 |");
+   open(FH, "ssh -o LogLevel=Error -o BatchMode=yes $NODECFG->{'SSH_OPTS'} -l $NODECFG->{'USERNAME'} $NODECFG->{'HOSTNAME'} $CMD 2>&1 |");
 
    while(<FH>){
       print "$NODECFG->{'HOSTNAME'}: $NODECFG->{'PADDING'}$_";

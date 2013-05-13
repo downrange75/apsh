@@ -72,7 +72,7 @@ sub RunCMD {
 
    $NODECFG->{'SSH_OPTS'} =~ s/\-p/\-P/;
 
-   open(FH, "scp $NODECFG->{'SSH_OPTS'} -o BatchMode=yes -o LogLevel=quiet $RECURSIVE @LFILES $NODECFG->{'USERNAME'}\@$NODECFG->{'HOSTNAME'}:$RFILE 2>&1 |");
+   open(FH, "scp $NODECFG->{'SSH_OPTS'} -o BatchMode=yes -o LogLevel=Error $RECURSIVE @LFILES $NODECFG->{'USERNAME'}\@$NODECFG->{'HOSTNAME'}:$RFILE 2>&1 |");
 
    while(<FH>){
       print "$NODECFG->{'HOSTNAME'}: $NODECFG->{'PADDING'}$_";

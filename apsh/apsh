@@ -49,13 +49,17 @@ APSH::CreateThreads(@NODES);
 # passed and run the command.
 ##############################
 sub RunCMD {
-   my $NODECFG = $_[0];
+   my $NODECFG = shift;
+
+   $APSH::THREADCNT++;
 
    open(FH, "ssh -o LogLevel=Error -o BatchMode=yes $NODECFG->{'SSH_OPTS'} -l $NODECFG->{'USERNAME'} $NODECFG->{'HOSTNAME'} $CMD 2>&1 |");
 
    while(<FH>){
-      print "$NODECFG->{'HOSTNAME'}: $NODECFG->{'PADDING'}$_";
+      $APSH::QUEUE->enqueue("$NODECFG->{'HOSTNAME'}: $NODECFG->{'PADDING'}$_");
    }
 
    close(FH);
+
+   $APSH::QUEUE->enqueue("--THREAD_FINISHED--");
 }

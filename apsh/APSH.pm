@@ -20,12 +20,19 @@
 package APSH;
 use strict;
 use threads;
+use threads::shared;
+use Thread::Queue;
 
 our @ISA        = qw(Exporter);
 our @EXPORT     = qw(GenNodes, QuoteCMD, CreateThreads, GetPadding, ReturnAllNodes);
 
 my $NODEFILE    = '/etc/apsh/nodes.tab';
 my $MAXNAME_L   = "0";
+
+our $QUEUE       = Thread::Queue->new();
+our $THREADCNT   = 0;
+
+share($THREADCNT);
 
 ##############################
 # GenNodes()
@@ -146,12 +153,48 @@ sub CreateThreads{
    my @NODES      = @_;
    my @THREADS    = ();
 
+   # Create a thread to handle output from worker threads
+   push(@THREADS, threads->create(\&outputThread));
+
+   # Create the worker threads
    for (@NODES){
       push(@THREADS, threads->create(\&main::RunCMD, ParseNodeLine($_)));
    }
 
    for (@THREADS){
       $_->join();
+   }
+}
+
+##############################
+# outputThread()
+#
+# Rather than letting each thread
+# send output to STDOUT, each thread
+# now inserts each line of output onto
+# the queue. This single thread here is
+# now handles output -- preventing any
+# sort of output overlap from the
+# individual threads.
+##############################
+sub outputThread{
+   my $FINISHED = undef;
+
+   while ((! defined $FINISHED) && (my $OUTPUT = $QUEUE->dequeue())){
+      # Could not find a mechanism for letting
+      # this thread know when all worker threads
+      # were complete. Each will send the following
+      # string as the last line of output to signal
+      # completion.
+      if ($OUTPUT =~ /--THREAD_FINISHED--/){
+         $THREADCNT--;
+      }else{
+         print $OUTPUT;
+      }
+
+      if ($THREADCNT eq 0){
+         $FINISHED = 1;
+      }
    }
 }
 

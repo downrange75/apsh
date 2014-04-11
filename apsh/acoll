@@ -29,9 +29,12 @@ my $NODEGROUPS = APSH::GetNodeGroups();
 while (<STDIN>){
    chomp($_);
 
-   $_ =~ /(^.*?):\s+(.*)/;
+   my ($node, $line) = split(/:/, $_, 2);
 
-   push(@{$OUTPUT{$1}}, "$2\n");
+   $node =~ s/://g;
+   $line =~ s/^\s+//;
+
+   push(@{$OUTPUT{$node}}, "$line\n");
 }
 
 for my $KEY (keys %OUTPUT){

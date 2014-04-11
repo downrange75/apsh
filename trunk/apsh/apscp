@@ -70,15 +70,19 @@ APSH::CreateThreads(@NODES);
 sub RunCMD {
    my $NODECFG = $_[0];
 
+   $APSH::THREADCNT++;
+
    $NODECFG->{'SSH_OPTS'} =~ s/\-p/\-P/;
 
    open(FH, "scp $NODECFG->{'SSH_OPTS'} -o BatchMode=yes -o LogLevel=Error $RECURSIVE @LFILES $NODECFG->{'USERNAME'}\@$NODECFG->{'HOSTNAME'}:$RFILE 2>&1 |");
 
    while(<FH>){
-      print "$NODECFG->{'HOSTNAME'}: $NODECFG->{'PADDING'}$_";
+      $APSH::QUEUE->enqueue("$NODECFG->{'HOSTNAME'}: $NODECFG->{'PADDING'}$_");
    }
 
    close(FH);
 
-   print "$NODECFG->{'HOSTNAME'}: $NODECFG->{'PADDING'}...complete\n";
+   $APSH::QUEUE->enqueue("$NODECFG->{'HOSTNAME'}: $NODECFG->{'PADDING'}...complete\n");
+
+   $APSH::QUEUE->enqueue("--THREAD_FINISHED--");
 }

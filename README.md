@@ -108,9 +108,13 @@ acoll Usage
 The command acoll collates the ouput from apsh as follows:
 
 $ apsh group1,group2,-node2 date | acoll
+
 ##########################################
+
 node1 group2
+
 ##########################################
+
 Sat May 11 08:34:47 EDT 2013
 
 
